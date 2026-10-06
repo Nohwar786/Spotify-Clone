@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spotify Premium Clone</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#121212;
+color:white;
+height:100vh;
+display:flex;
+flex-direction:column;
+overflow:hidden;
+}
+
+.topnav{
+height:70px;
+background:black;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 25px;
+border-bottom:1px solid #333;
+}
+
+.logo{
+font-size:32px;
+font-weight:bold;
+color:#1db954;
+}
+
+.search-top{
+padding:10px 18px;
+border:none;
+border-radius:25px;
+background:#282828;
+color:white;
+width:300px;
+}
+
+.nav-links{
+display:flex;
+gap:20px;
+align-items:center;
+}
+
+.nav-links a{
+color:white;
+text-decoration:none;
+}
+
+.login-btn,
+.premium-btn{
+padding:10px 20px;
+border:none;
+border-radius:25px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.login-btn{
+background:white;
+color:black;
+}
+
+.premium-btn{
+background:#1db954;
+color:white;
+}
+
+.container{
+display:flex;
+flex:1;
+overflow:hidden;
+}
+
+.sidebar{
+width:250px;
+background:black;
+padding:20px;
+}
+
+.sidebar div{
+padding:12px;
+margin-bottom:10px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.sidebar div:hover{
+background:#1f1f1f;
+}
+
+.main{
+flex:1;
+padding:20px;
+overflow:auto;
+background:linear-gradient(#222,#121212);
+}
+
+.banner{
+background:linear-gradient(90deg,#1db954,#0a7d32);
+padding:25px;
+border-radius:20px;
+margin-bottom:25px;
+}
+
+.banner h1{
+font-size:38px;
+}
+
+.song-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:20px;
+}
+
+.card{
+background:#181818;
+padding:15px;
+border-radius:12px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.card:hover{
+background:#282828;
+transform:scale(1.03);
+}
+
+.card img{
+width:100%;
+height:180px;
+object-fit:cover;
+border-radius:10px;
+}
+
+.card h4{
+margin-top:10px;
+}
+
+.card p{
+color:#aaa;
+}
+
+.player{
+height:95px;
+background:#181818;
+border-top:1px solid #333;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 25px;
+}
+
+.now-playing{
+display:flex;
+align-items:center;
+gap:15px;
+width:25%;
+}
+
+.now-playing img{
+width:60px;
+height:60px;
+border-radius:8px;
+}
+
+.controls{
+width:50%;
+text-align:center;
+}
+
+.controls button{
+background:#1db954;
+border:none;
+color:white;
+width:45px;
+height:45px;
+border-radius:50%;
+margin:0 8px;
+font-size:18px;
+cursor:pointer;
+}
+
+.progress{
+width:100%;
+}
+
+.volume-box{
+width:20%;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.volume{
+width:100%;
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.8);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.login-box{
+background:#181818;
+padding:30px;
+border-radius:20px;
+width:350px;
+text-align:center;
+}
+
+.login-box input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:8px;
+background:#282828;
+color:white;
+}
+
+.login-box button{
+width:100%;
+padding:12px;
+background:#1db954;
+border:none;
+border-radius:25px;
+color:white;
+font-size:18px;
+cursor:pointer;
+}
+
+.hidden{
+display:none;
+}
+
+@media(max-width:768px){
+
+.sidebar{
+display:none;
+}
+
+.search-top{
+width:150px;
+}
+
+.player{
+flex-direction:column;
+height:auto;
+}
+
+.now-playing,
+.controls,
+.volume-box{
+width:100%;
+margin:5px 0;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="loginModal" class="modal">
+
+<div class="login-box">
+
+<h2>Spotify Login</h2>
+
+<input id="username" placeholder="Username">
+
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+</div>
+
+</div>
+
+<div class="topnav">
+
+<div class="logo">Spotify</div>
+
+<input type="text" id="searchTop" class="search-top" placeholder="What do you want to play?">
+
+<div class="nav-links">
+
+<a href="#">Home</a>
+<a href="#">Search</a>
+<a href="#">Dashboard</a>
+
+<button class="premium-btn">Premium</button>
+
+<button class="login-btn" onclick="logout()">Logout</button>
+
+</div>
+
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+
+<div>🏠 Home</div>
+<div>🔍 Search</div>
+<div>🎵 Your Library</div>
+<div>❤️ Liked Songs</div>
+<div>➕ Create Playlist</div>
+
+</div>
+
+<div class="main">
+
+<div class="banner">
+
+<h1>Welcome to Spotify Premium</h1>
+
+<p>Ad-free listening • Offline downloads • Unlimited skips</p>
+
+</div>
+
+<h2>My Songs</h2>
+
+<br>
+
+<div class="song-grid" id="songGrid"></div>
+
+</div>
+
+</div>
+
+<div class="player">
+
+<div class="now-playing">
+
+<img id="cover" src="image/ajamahi.png">
+
+<div>
+
+<h4 id="title">No Song</h4>
+
+<p id="artist">Artist</p>
+
+</div>
+
+</div>
+
+<div class="controls">
+
+<button onclick="prevSong()">⏮</button>
+
+<button onclick="togglePlay()" id="playBtn">▶</button>
+
+<button onclick="nextSong()">⏭</button>
+
+<br><br>
+
+<input type="range" id="progress" class="progress" min="0" max="100" value="0">
+
+</div>
+
+<div class="volume-box">
+
+🔊
+
+<input type="range" id="volume" class="volume" min="0" max="1" step="0.1" value="1">
+
+</div>
+
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+
+const songs = [
+
+{
+title:'Aja Ve Mahi',
+artist:'Bollywood',
+cover:'image/ajamahi.png',
+src:'songs/aja ve mahi.mpeg'
+},
+
+{
+title:'Bekhudi',
+artist:'Bollywood',
+cover:'image/Bekhudi.png',
+src:'songs/Bekudi.mpeg'
+},
+
+{
+title:'Humko Tumse Pyarr Hai',
+artist:'Bollywood',
+cover:'image/Humkotumsepyarrh.png',
+src:'songs/humko tumse pyarr hai.mpeg'
+},
+
+{
+title:'Feelings',
+artist:'Punjabi',
+cover:'image/Feelings.jpg',
+src:'songs/Feelings.mp3'
+},
+
+{
+title:'Kabootar',
+artist:'Punjabi',
+cover:'image/Kabootar.jpg',
+src:'songs/Kabootar.mp3'
+},
+
+{
+title:'Jhalak Dikhlaja',
+artist:'Bollywood',
+cover:'image/Jhalak-Dikhlaja.jpg',
+src:'songs/Jhalak-Dikhlaja.mp3'
+},
+
+{
+title:'Ford Vs Ford 2',
+artist:'Punjabi',
+cover:'image/Ford vs Ford 2.png',
+src:'songs/Ford Vs Ford 2.mp3'
+},
+
+{
+title:'Gall Goriye',
+artist:'Punjabi',
+cover:'image/Gall Goriye.jpg',
+src:'songs/Gall Goriye.mp3'
+},
+
+{
+title:'Barood Single',
+artist:'Punjabi',
+cover:'image/Barood Single.png',
+src:'songs/Barood Single.mp3'
+},
+
+{
+title:'Bhartaar',
+artist:'Haryanvi',
+cover:'image/BHARTAAR.jpg',
+src:'songs/Bhartaar.mp3'
+},
+
+{
+title:'Follow',
+artist:'Punjabi',
+cover:'image/Follow feat.jpg',
+src:'songs/Follow feat.mp3'
+},
+
+{
+title:'I Am Devil Of My World',
+artist:'Punjabi',
+cover:'image/i-am-devil-of-my-world.jpg',
+src:'songs/i-am-devil-of-my-world.mp3'
+},
+
+{
+title:'Amplifier',
+artist:'Honey Singh',
+cover:'image/amplifier.png',
+src:'songs/Amplifier.mp3'
+},
+
+{
+title:'Cheques',
+artist:'Punjabi',
+cover:'image/Feelings.jpg',
+src:'songs/Cheques.mp3'
+},
+
+{
+title:'Hawa Banke',
+artist:'Punjabi',
+cover:'image/Gall Goriye.jpg',
+src:'songs/Hawa Banke.mp3'
+},
+
+{
+title:'Bhula Dunga',
+artist:'Bollywood',
+cover:'image/Jhalak-Dikhlaja.jpg',
+src:'songs/Bhula Dunga.mp3'
+},
+
+{
+title:'Butterfly',
+artist:'Punjabi',
+cover:'image/Follow feat.jpg',
+src:'songs/Butterfly.mp3'
+},
+
+{
+title:'Daru Badnam',
+artist:'Punjabi',
+cover:'image/Barood Single.png',
+src:'songs/Daru Badnam.mp3'
+},
+
+{
+title:'8 Parche',
+artist:'Punjabi',
+cover:'image/8parche.png',
+src:'songs/8 Parche.mp3'
+},
+
+{
+title:'Laal Chunariya',
+artist:'Bollywood',
+cover:'image/laalchunariya.png',
+src:'songs/Laal Chunariya.mp3'
+}
+
+];
+
+let currentIndex = 0;
+let isPlaying = false;
+
+const audio = document.getElementById("audio");
+const grid = document.getElementById("songGrid");
+const title = document.getElementById("title");
+const artist = document.getElementById("artist");
+const cover = document.getElementById("cover");
+const playBtn = document.getElementById("playBtn");
+const progress = document.getElementById("progress");
+const volume = document.getElementById("volume");
+const searchTop = document.getElementById("searchTop");
+
+function login(){
+
+const username=document.getElementById("username").value;
+const password=document.getElementById("password").value;
+
+if(username && password){
+
+document.getElementById("loginModal").classList.add("hidden");
+
+localStorage.setItem("spotifyLogin","true");
+
+}
+
+}
+
+if(localStorage.getItem("spotifyLogin")){
+
+document.getElementById("loginModal").classList.add("hidden");
+
+}
+
+function logout(){
+
+localStorage.removeItem("spotifyLogin");
+
+location.reload();
+
+}
+
+function renderSongs(list=songs){
+
+grid.innerHTML="";
+
+list.forEach(song=>{
+
+let card=document.createElement("div");
+
+card.className="card";
+
+card.innerHTML=`
+<img src="${song.cover}">
+<h4>${song.title}</h4>
+<p>${song.artist}</p>
+`;
+
+card.onclick=()=>{
+
+currentIndex=songs.indexOf(song);
+
+loadSong();
+
+playSong();
+
+};
+
+grid.appendChild(card);
+
+});
+
+}
+
+function loadSong(){
+
+audio.src=songs[currentIndex].src;
+
+title.innerText=songs[currentIndex].title;
+
+artist.innerText=songs[currentIndex].artist;
+
+cover.src=songs[currentIndex].cover;
+
+}
+
+function playSong(){
+
+audio.play();
+
+isPlaying=true;
+
+playBtn.innerText="⏸";
+
+}
+
+function pauseSong(){
+
+audio.pause();
+
+isPlaying=false;
+
+playBtn.innerText="▶";
+
+}
+
+function togglePlay(){
+
+if(isPlaying){
+
+pauseSong();
+
+}else{
+
+playSong();
+
+}
+
+}
+
+function nextSong(){
+
+currentIndex=(currentIndex+1)%songs.length;
+
+loadSong();
+
+playSong();
+
+}
+
+function prevSong(){
+
+currentIndex=(currentIndex-1+songs.length)%songs.length;
+
+loadSong();
+
+playSong();
+
+}
+
+audio.ontimeupdate=function(){
+
+if(audio.duration){
+
+progress.value=(audio.currentTime/audio.duration)*100;
+
+}
+
+};
+
+progress.oninput=function(){
+
+audio.currentTime=(progress.value/100)*audio.duration;
+
+};
+
+volume.oninput=function(){
+
+audio.volume=volume.value;
+
+};
+
+audio.onended=nextSong;
+
+searchTop.oninput=function(e){
+
+let value=e.target.value.toLowerCase();
+
+let filtered=songs.filter(song=>
+
+song.title.toLowerCase().includes(value) ||
+
+song.artist.toLowerCase().includes(value)
+
+);
+
+renderSongs(filtered);
+
+};
+
+renderSongs();
+
+loadSong();
+
+</script>
+
+</body>
+</html>
