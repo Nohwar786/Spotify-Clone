@@ -120,5 +120,11 @@ Through this project, I practiced:
 * Organizing a front-end project for GitHub.
 
 
+## 🖥️ Application Screenshot
+
+![Spotify Clone Application](screenshots/Screenshot%202026-10-11%20214953.png)
+
+
+
 
 *Built as a front-end learning project to practice web development and interactive music-player functionality.*
